@@ -1,0 +1,20 @@
+You are now connected to database "nc_news_test" as user "chris".
+                                                                        Table "public.articles"
+     Column      |            Type             | Collation | Nullable |                                             Default                                             
+-----------------+-----------------------------+-----------+----------+-------------------------------------------------------------------------------------------------
+ article_id      | integer                     |           | not null | nextval('articles_article_id_seq'::regclass)
+ title           | character varying           |           | not null | 
+ topic           | character varying           |           | not null | 
+ author          | character varying           |           | not null | 
+ body            | character varying           |           | not null | 
+ created_at      | timestamp without time zone |           |          | now()
+ votes           | integer                     |           | not null | 0
+ article_img_url | character varying           |           |          | 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700'::character varying
+Indexes:
+    "articles_pkey" PRIMARY KEY, btree (article_id)
+Foreign-key constraints:
+    "articles_author_fkey" FOREIGN KEY (author) REFERENCES users(username)
+    "articles_topic_fkey" FOREIGN KEY (topic) REFERENCES topics(slug)
+Referenced by:
+    TABLE "comments" CONSTRAINT "comments_article_id_fkey" FOREIGN KEY (article_id) REFERENCES articles(article_id)
+
