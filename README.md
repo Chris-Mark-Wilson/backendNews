@@ -5,7 +5,7 @@ To ensure the project works on your local system you will need to add 2 files at
 .env.test
 .env.developement
 each file should contain the name of your database
-e.g. PGDATABASE=your_database_name_test (for .env.test)
-or PGDATABASE=your_dev_database (for .env.development)
+e.g. PGDATABASE=nc_news_test (in .env.test)
+or PGDATABASE=nc_news (for .env.development)
 
 
