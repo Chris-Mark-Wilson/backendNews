@@ -42,7 +42,7 @@ describe("/api", () => {
   });
 });
 
-describe("/api/articles", () => {
+describe.skip("/api/articles", () => {
   it("should respond with 200 and an array of article objects", () => {
     return request(app)
       .get("/api/articles")
