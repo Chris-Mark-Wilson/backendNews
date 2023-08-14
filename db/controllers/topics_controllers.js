@@ -1,4 +1,15 @@
-const getAllTopics=((req,res,next)=>{
+const selectAllTopics=require('../models/topics_models')
 
-    console.log("in topics controller")
+const getAllTopics=((req,res,next)=>{
+selectAllTopics()
+.then((result)=>{
+    
+res.status(200).send({topics:result})
 })
+.catch((err)=>{
+    next(err)
+})
+
+ 
+})
+module.exports=getAllTopics;
