@@ -3,6 +3,7 @@ const db = require("../db/connection");
 const app = require("../app");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
+const endpointsFile = require("../endpoints.json");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -35,21 +36,8 @@ describe("/api", () => {
       .get("/api")
       .expect("Content-Type", /json/)
       .expect(200)
-      .then(({ body }) => {
-        expect(typeof body).toBe("object");
-        expect(body).toHaveProperty("endpoints");
-        expect(typeof body.endpoints).toBe("object");
-        expect(body.endpoints).toHaveProperty("GET /api");
-        const keys = Object.keys(body.endpoints);
-        keys.forEach((key) => {
-          if (key != "GET /api") {
-            expect(body.endpoints[key]).toHaveProperty("description");
-            expect(body.endpoints[key]).toHaveProperty("queries");
-            expect(body.endpoints[key]).toHaveProperty("exampleResponse");
-          }else{
-            expect(body.endpoints[key]).toHaveProperty("description");
-          }
-        });
+      .then(({ body: { endpoints } }) => {
+        expect(endpoints).toEqual(endpointsFile);
       });
   });
 });
