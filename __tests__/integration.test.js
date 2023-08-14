@@ -41,3 +41,27 @@ describe("/api", () => {
       });
   });
 });
+
+describe("/api/articles", () => {
+  it("should respond with 200 and an array of article objects", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect("content-Type", /json/)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveProperty("articles");
+        body.articles.forEach((article) => {
+          expect.objectContaining({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id:expect.any(Number),
+            topic:expect.any(String),
+            created_at:expect.any(String),
+            votes:expect.any(Number),
+            article_img_url:expect.any(String),
+            comment_count:Expect.any(Number)
+          });
+        });
+      });
+  });
+});
