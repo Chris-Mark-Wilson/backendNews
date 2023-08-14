@@ -36,14 +36,16 @@ describe('/api/articles/:article_id',()=>{
         .expect(200)
         .then(({body})=>{
             expect(body.article.article_id).toBe(1)
-            expect(body).toHaveProperty("article",expect.any(Object))
-            expect(body.article).toHaveProperty("author",expect.any(String))
-            expect(body.article).toHaveProperty("title",expect.any(String))
-            expect(body.article).toHaveProperty("body",expect.any(String))
-            expect(body.article).toHaveProperty("topic",expect.any(String))
-            expect(body.article).toHaveProperty("created_at",expect.any(String))
-            expect(body.article).toHaveProperty("votes",expect.any(Number))
-            expect(body.article).toHaveProperty("article_img_url",expect.any(String))
+            expect(body).toHaveProperty("article",expect.objectContaining({
+              author:expect.any(String),
+              title:expect.any(String),
+              body:expect.any(String),
+              topic:expect.any(String),
+              created_at:expect.any(String),
+              votes:expect.any(Number),
+              article_img_url:expect.any(String)
+            }))
+           
         })
     })
     it('should 404 for non existent article',()=>{
@@ -52,7 +54,7 @@ describe('/api/articles/:article_id',()=>{
         .expect("content-Type",/json/)
         .expect(404)
         .then(({body})=>{
-            expect(body.msg).toBe("not found")
+            expect(body).toEqual({status:404,msg:"not found"})
         })
     })
     it('should 400 for invalid data type',()=>{
@@ -60,8 +62,8 @@ describe('/api/articles/:article_id',()=>{
         .get('/api/articles/dodgy')
         .expect("content-Type",/json/)
         .expect(400)
-        .then(({body:{msg}})=>{
-            expect(msg).toBe("invalid data type")
+        .then(({body})=>{
+            expect(body).toEqual({status:400,msg:"invalid data type"})
         })
     })
 })

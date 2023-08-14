@@ -10,11 +10,7 @@ const selectArticleById=(id)=>{
         }
         return rows[0];
     })
-    .catch((err)=>{
-      if(err.code==="22P02"){
-        return Promise.reject({status:400,msg:"invalid data type"})
-      }else return Promise.reject(err)
-    })
+  
 
 
 }
