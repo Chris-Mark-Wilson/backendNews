@@ -41,3 +41,42 @@ describe("/api", () => {
       });
   });
 });
+describe('/api/articles/:article_id',()=>{
+    it('should respond 200 with the specified article',()=>{
+        return request(app)
+        .get("/api/articles/1")
+        .expect("content-Type",/json/)
+        .expect(200)
+        .then(({body})=>{
+            expect(body.article.article_id).toBe(1)
+            expect(body).toHaveProperty("article",expect.objectContaining({
+              author:expect.any(String),
+              title:expect.any(String),
+              body:expect.any(String),
+              topic:expect.any(String),
+              created_at:expect.any(String),
+              votes:expect.any(Number),
+              article_img_url:expect.any(String)
+            }))
+           
+        })
+    })
+    it('should 404 for non existent article',()=>{
+        return request(app)
+        .get('/api/articles/999')
+        .expect("content-Type",/json/)
+        .expect(404)
+        .then(({body})=>{
+            expect(body).toEqual({status:404,msg:"not found"})
+        })
+    })
+    it('should 400 for invalid data type',()=>{
+        return request(app)
+        .get('/api/articles/dodgy')
+        .expect("content-Type",/json/)
+        .expect(400)
+        .then(({body})=>{
+            expect(body).toEqual({status:400,msg:"invalid data type"})
+        })
+    })
+})

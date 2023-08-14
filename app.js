@@ -1,7 +1,7 @@
 const express = require("express");
 const getAllTopics = require("./db/controllers/topics_controllers");
-
-const { customErrors, sqlErrors } = require("./db/errors");
+const getArticleById=require('./db/controllers/articles_controllers')
+const { customErrors, serverErrors } = require("./db/errors");
 const getAllEndpoints = require("./db/controllers/endpoints_controller");
 
 const app = express();
@@ -9,7 +9,9 @@ const app = express();
 app.get("/api/topics", getAllTopics);
 app.get("/api", getAllEndpoints);
 
+app.get("/api/articles/:article_id",getArticleById)
+
 app.use(customErrors);
-app.use(sqlErrors);
+app.use(serverErrors);
 
 module.exports = app;
