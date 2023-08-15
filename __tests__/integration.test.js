@@ -82,3 +82,22 @@ describe('/api/articles/:article_id',()=>{
 })
 
 
+describe('/api/articles/:article_id/comments',()=>{
+  it('should respond 200 with all comments for a given article',()=>{
+    return request(app)
+    .get('/api/articles/1/comments')
+    .expect(200)
+    .then(({body:{comments}})=>{
+      comments.forEach(comment=>{
+        expect(comment).toEqual(objectContaining({
+          comment_id:expect.any(Number),
+          votes:expect.any(Number),
+          created_at:expect.any(String),
+          author:expect.any(String),
+          body:expect.any(String),
+          article_id:expect.any(Number)
+        }))
+      })
+    })
+  })
+})
