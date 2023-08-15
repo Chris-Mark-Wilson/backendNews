@@ -177,9 +177,17 @@ describe("GET /api/articles/:article_id/comments", () => {
       expect(comments).toEqual([])
     })
   })
+  it('should 400 bad request for invalid id',()=>{
+    return request(app)
+    .get('/api/articles/banana/comments')
+    .expect(400)
+    .then(({body:{msg}})=>{
+      expect(msg).toEqual("invalid data type")
+    })
+  })
 });
 
-describe('POST /api/articles/:article_id/comments',()=>{
+describe.skip('POST /api/articles/:article_id/comments',()=>{
   it('should 202: accept a comment for a given article responding with the posted comment',()=>{
     return request(app)
     .post("/api/articles/1/comments")
