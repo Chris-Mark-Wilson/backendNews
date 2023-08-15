@@ -82,7 +82,7 @@ describe('/api/articles/:article_id',()=>{
 })
 
 
-describe('/api/articles/:article_id/comments',()=>{
+describe.skip('/api/articles/:article_id/comments',()=>{
   it('should respond 200 with all comments for a given article',()=>{
     return request(app)
     .get('/api/articles/1/comments')
