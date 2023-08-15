@@ -19,7 +19,7 @@ describe("Bad route", () => {
   });
 });
 
-describe("/api/topics", () => {
+describe("GET /api/topics", () => {
   it("should respond 200 with all topics, each with a slug and description property", () => {
     return request(app)
       .get("/api/topics")
@@ -48,7 +48,7 @@ describe("/api", () => {
   });
 });
 
-describe("/api/articles/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
   it("should respond 200 with the specified article", () => {
     return request(app)
       .get("/api/articles/1")
@@ -90,7 +90,7 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
-describe("/api/articles", () => {
+describe("GET /api/articles", () => {
   it("should respond with 200 and an array of article objects, sorted by date DESC without a body property", () => {
     return request(app)
       .get("/api/articles")
@@ -138,7 +138,7 @@ describe("/api/articles", () => {
   });
 });
 
-describe("/api/articles/:article_id/comments", () => {
+describe("GET /api/articles/:article_id/comments", () => {
   it("should respond 200 with all comments for a given article", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -178,3 +178,21 @@ describe("/api/articles/:article_id/comments", () => {
     })
   })
 });
+
+describe('POST /api/articles/:article_id/comments',()=>{
+  it('should 202: accept a comment for a given article responding with the posted comment',()=>{
+    return request(app)
+    .post("/api/articles/1/comments")
+    .send({username:'lurker',body:"Don't mind me, I'm just lurking..."})
+    .expect("Content-type",/json/)
+    .expect(202)
+    .then(({body:{comment}})=>{
+      expect(comment).toEqual(expect.objectContaining({
+        body:"Don't mind me, I'm just lurking...",
+        votes:0,
+        article_id:1,
+        created_at:expect.any(String)
+      }))
+    })
+  })
+})
