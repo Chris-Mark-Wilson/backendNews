@@ -98,7 +98,7 @@ describe("/api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles.length).toBe(13)
+        expect(articles.length).toBe(13);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
           expect(article).toEqual(
@@ -126,11 +126,11 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-          articles.forEach((article) => {
+        articles.forEach((article) => {
           if (article.article_id === 1) {
             expect(article.comment_count).toBe("11");
           }
-          if ((article.article_id === 9)) {
+          if (article.article_id === 9) {
             expect(article.comment_count).toBe("2");
           }
         });
@@ -138,26 +138,43 @@ describe("/api/articles", () => {
   });
 });
 
-
-describe.skip('/api/articles/:article_id/comments',()=>{
-  it('should respond 200 with all comments for a given article',()=>{
+describe("/api/articles/:article_id/comments", () => {
+  it("should respond 200 with all comments for a given article", () => {
     return request(app)
-    .get('/api/articles/1/comments')
-    .expect("Content-Type",/json/)
+      .get("/api/articles/1/comments")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toBe(11);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  it("should 404 for a non existent article",()=>{
+    return request(app)
+    .get('/api/articles/999/comments')
+    .expect(404)
+    .then(({body})=>{
+      expect(body).toEqual({status:404,msg:"not found"})
+    })
+  })
+  it('should return 200 with an empty array for articles with 0 comments',()=>{
+    return request(app)
+    .get('/api/articles/2/comments')
     .expect(200)
     .then(({body:{comments}})=>{
-      comments.forEach(comment=>{
-        expect(comment).toEqual(objectContaining({
-          comment_id:expect.any(Number),
-          votes:expect.any(Number),
-          created_at:expect.any(String),
-          author:expect.any(String),
-          body:expect.any(String),
-          article_id:expect.any(Number)
-        }))
-      })
+      expect(comments).toEqual([])
     })
-})
-})
-
-
+  })
+});
