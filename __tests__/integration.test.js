@@ -125,8 +125,7 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        console.log(articles)
-        articles.forEach((article) => {
+          articles.forEach((article) => {
           if (article.article_id === 1) {
             expect(article.comment_count).toBe("11");
           }
