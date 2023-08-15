@@ -31,5 +31,3 @@ COUNT (comments.comment_id) AS comment_count
 };
 
 module.exports = { selectArticleById, selectAllArticles };
-
-

@@ -19,7 +19,7 @@ describe("Bad route", () => {
   });
 });
 
-describe("/api/topics", () => {
+describe("GET /api/topics", () => {
   it("should respond 200 with all topics, each with a slug and description property", () => {
     return request(app)
       .get("/api/topics")
@@ -48,7 +48,7 @@ describe("/api", () => {
   });
 });
 
-describe("/api/articles/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
   it("should respond 200 with the specified article", () => {
     return request(app)
       .get("/api/articles/1")
@@ -90,7 +90,7 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
-describe("/api/articles", () => {
+describe("GET /api/articles", () => {
   it("should respond with 200 and an array of article objects, sorted by date DESC without a body property", () => {
     return request(app)
       .get("/api/articles")
@@ -98,7 +98,7 @@ describe("/api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles.length).toBe(13)
+        expect(articles.length).toBe(13);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
           expect(article).toEqual(
@@ -126,14 +126,81 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-          articles.forEach((article) => {
+        articles.forEach((article) => {
           if (article.article_id === 1) {
             expect(article.comment_count).toBe("11");
           }
-          if ((article.article_id === 9)) {
+          if (article.article_id === 9) {
             expect(article.comment_count).toBe("2");
           }
         });
       });
   });
 });
+
+describe("GET /api/articles/:article_id/comments", () => {
+  it("should respond 200 with all comments for a given article", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toBe(11);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  it("should 404 for a non existent article",()=>{
+    return request(app)
+    .get('/api/articles/999/comments')
+    .expect(404)
+    .then(({body})=>{
+      expect(body).toEqual({status:404,msg:"not found"})
+    })
+  })
+  it('should return 200 with an empty array for articles with 0 comments',()=>{
+    return request(app)
+    .get('/api/articles/2/comments')
+    .expect(200)
+    .then(({body:{comments}})=>{
+      expect(comments).toEqual([])
+    })
+  })
+  it('should 400 bad request for invalid id',()=>{
+    return request(app)
+    .get('/api/articles/banana/comments')
+    .expect(400)
+    .then(({body:{msg}})=>{
+      expect(msg).toEqual("invalid data type")
+    })
+  })
+});
+
+describe.skip('POST /api/articles/:article_id/comments',()=>{
+  it('should 202: accept a comment for a given article responding with the posted comment',()=>{
+    return request(app)
+    .post("/api/articles/1/comments")
+    .send({username:'lurker',body:"Don't mind me, I'm just lurking..."})
+    .expect("Content-type",/json/)
+    .expect(202)
+    .then(({body:{comment}})=>{
+      expect(comment).toEqual(expect.objectContaining({
+        body:"Don't mind me, I'm just lurking...",
+        votes:0,
+        article_id:1,
+        created_at:expect.any(String)
+      }))
+    })
+  })
+})

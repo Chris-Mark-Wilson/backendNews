@@ -8,6 +8,7 @@ const customErrors = (err, req, res, next) => {
 };
 
 const serverErrors = (err, req, res, next) => {
+  console.log(err);
   res.status(500).send({ msg: "Internal server error" });
 };
 
