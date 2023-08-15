@@ -7,10 +7,11 @@ const {
 const { customErrors, serverErrors } = require("./db/errors");
 const getAllEndpoints = require("./db/controllers/endpoints_controller");
 const {
-  getCommentsByArticleId,
+  getCommentsByArticleId,postComment
 } = require("./db/controllers/comments_controllers");
 
 const app = express();
+app.use(express.json())
 
 app.get("/api", getAllEndpoints);
 
@@ -21,6 +22,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles", getAllArticles);
+
+app.post('/api/articles/:article_id/comments',postComment)
 
 app.use((_, res) => {
   res.status(404).send({ status: 404, msg: "Path not found" });
