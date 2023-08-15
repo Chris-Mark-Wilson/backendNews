@@ -1,7 +1,7 @@
 
 const selectArticleById=require("../models/articles_models")
-
 const getArticleById=((req,res,next)=>{
+    
     const {article_id}=req.params;
     selectArticleById(article_id)
     .then((result)=>{
