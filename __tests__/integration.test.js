@@ -313,3 +313,91 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(201);
   });
 });
+describe("PATCH /api/articles/:article_id", () => {
+  it("should respond 202 with the updated article accepting a votes property", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 1 })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 101,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          })
+        );
+      });
+  });
+  it("should decrement the votes and go into minus numbers if need be", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -101 })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: -1,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          })
+        );
+      });
+  });
+  it("should 404 if the article doesnt exist", () => {
+    return request(app)
+      .patch("/api/articles/999")
+      .send({ inc_votes: -101 })
+      .expect("Content-Type", /json/)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("not found");
+      });
+  });
+  it("should 400 for a bad key on sent object", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_vot: -101 })
+      .expect("Content-Type", /json/)
+      .expect(400)
+      .then(({ body: { error } }) => {
+        expect(error).toEqual(
+          "Failing row contains (1, Living in the shadow of a great man, mitch, butter_bridge, I find this existence challenging, 2020-07-09 21:11:00, null, https://images.pexels.com/photos/158651/news-newsletter-newspape...)."
+        );
+      });
+  });
+  it("should 400 for a bad datatype on article_id", () => {
+    return request(app)
+      .patch("/api/articles/banana")
+      .send({ inc_votes: -101 })
+      .expect("Content-Type", /json/)
+      .expect(400)
+      .then(({ body: { error } }) => {
+        expect(error).toEqual("invalid data type");
+      });
+  });
+  it("should 400 for a bad datatype on inc_votes", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: { obj: "dodgy" } })
+      .expect("Content-Type", /json/)
+      .expect(400)
+      .then(({ body: { error } }) => {
+        expect(error).toEqual("invalid data type");
+      });
+  });
+});
