@@ -1,4 +1,4 @@
-const db = require("../connection");
+const db = require("../db/connection");
 
 const selectArticleById = (id) => {
   return db
@@ -26,6 +26,7 @@ COUNT (comments.comment_id) AS comment_count
  ORDER BY created_at DESC;`
     )
     .then((result) => {
+     
       return result.rows;
     });
 };
