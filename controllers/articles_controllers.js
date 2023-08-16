@@ -30,7 +30,6 @@ return Promise.all([selectArticleById(article_id),updateArticle(article_id, body
 .then(([_,article])=>{res.status(202).send({article:article})
 })
 .catch((err)=>{
-
     next(err)
 })
 }
