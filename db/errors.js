@@ -5,15 +5,15 @@ const customErrors = (err, req, res, next) => {
  
    if(err.code==="23503" ){
     res.status(404).send({error:err.detail})
-   }
+   }else
       if (err.detail) {
         res.status(400).send({ error: err.detail });
       } else {
         res.status(400).send({ error: "invalid data type" });
       }
-    }
+    }else next(err);
  
- else next(err);
+ 
 };
 
 const serverErrors = (err, req, res, next) => {
