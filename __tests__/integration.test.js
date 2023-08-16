@@ -314,7 +314,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 describe("PATCH /api/articles/:article_id", () => {
-  it("should respond 202 with the updated article accepting a votes property", () => {
+  it("should respond 200 with the updated article accepting a votes property", () => {
     return request(app)
       .patch("/api/articles/1")
       .send({ inc_votes: 1 })
