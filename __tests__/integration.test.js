@@ -187,19 +187,25 @@ describe("GET /api/articles/:article_id/comments", () => {
   })
 });
 
-describe.skip('POST /api/articles/:article_id/comments',()=>{
-  it('should 202: accept a comment for a given article responding with the posted comment',()=>{
+describe.only('PATCH /api/articles/:article_id',()=>{
+  it('should respond 202 with the updated article accepting a votes property',()=>{
     return request(app)
-    .post("/api/articles/1/comments")
-    .send({username:'lurker',body:"Don't mind me, I'm just lurking..."})
-    .expect("Content-type",/json/)
+    .patch('/api/articles/1')
+    .send({inc_votes:1})
+    .expect('Content-Type',/json/)
     .expect(202)
-    .then(({body:{comment}})=>{
-      expect(comment).toEqual(expect.objectContaining({
-        body:"Don't mind me, I'm just lurking...",
-        votes:0,
+    .then(({body:{article}})=>{
+      expect(article).toEqual(expect.objectContaining( {
         article_id:1,
-        created_at:expect.any(String)
+        title: "Living in the shadow of a great man",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "I find this existence challenging",
+        created_at: '2020-07-09T20:11:00.000Z',
+        votes: 101,
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+
       }))
     })
   })

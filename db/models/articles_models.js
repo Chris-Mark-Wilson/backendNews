@@ -30,4 +30,17 @@ COUNT (comments.comment_id) AS comment_count
     });
 };
 
-module.exports = { selectArticleById, selectAllArticles };
+const updateArticle = (article_id, body) => {
+  const { inc_votes } = body;
+  
+  return db.query(`
+  UPDATE articles
+  SET votes=articles.votes+$1
+  WHERE article_id=$2
+  RETURNING *;`,[inc_votes,article_id])
+  .then(({rows})=>{
+       return rows[0]
+  })
+};
+
+module.exports = { selectArticleById, selectAllArticles, updateArticle };
