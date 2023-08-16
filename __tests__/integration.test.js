@@ -315,7 +315,7 @@ describe("POST /api/articles/:article_id/comments", () => {
 });
 
 
-describe.skip('DELETE /api/comments/:comment_id',()=>{
+describe('DELETE /api/comments/:comment_id',()=>{
   it('should respond 404 no content and delete the given comment',()=>{
     return request(app)
     .delete('/api/comments/1')
