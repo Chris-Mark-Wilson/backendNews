@@ -319,7 +319,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .patch("/api/articles/1")
       .send({ inc_votes: 1 })
       .expect("Content-Type", /json/)
-      .expect(202)
+      .expect(200)
       .then(({ body: { article } }) => {
         expect(article).toEqual(
           expect.objectContaining({
@@ -341,7 +341,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .patch("/api/articles/1")
       .send({ inc_votes: -101 })
       .expect("Content-Type", /json/)
-      .expect(202)
+      .expect(200)
       .then(({ body: { article } }) => {
         expect(article).toEqual(
           expect.objectContaining({
