@@ -1,4 +1,4 @@
-const db = require("../connection");
+const db = require("../db/connection");
 const format = require("pg-format");
 
 const selectComments = (article_id) => {
@@ -24,7 +24,7 @@ const insertComment = (article_id, username, body) => {
     [[article_id, username, body]]
   );
   return db.query(formattedQuery).then(({ rows }) => {
-    return rows[0]
+    return rows[0];
   });
 };
 module.exports = { selectComments, insertComment };

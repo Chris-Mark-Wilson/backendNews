@@ -84,8 +84,8 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/dodgy")
       .expect("content-Type", /json/)
       .expect(400)
-      .then(({ body }) => {
-        expect(body).toEqual({ status: 400, msg: "invalid data type" });
+      .then(({ body: { error } }) => {
+        expect(error).toEqual("invalid data type");
       });
   });
 });
@@ -161,133 +161,155 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
-  it("should 404 for a non existent article",()=>{
+  it("should 404 for a non existent article", () => {
     return request(app)
-    .get('/api/articles/999/comments')
-    .expect(404)
-    .then(({body})=>{
-      expect(body).toEqual({status:404,msg:"not found"})
-    })
-  })
-  it('should return 200 with an empty array for articles with 0 comments',()=>{
+      .get("/api/articles/999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body).toEqual({ status: 404, msg: "not found" });
+      });
+  });
+  it("should return 200 with an empty array for articles with 0 comments", () => {
     return request(app)
-    .get('/api/articles/2/comments')
-    .expect(200)
-    .then(({body:{comments}})=>{
-      expect(comments).toEqual([])
-    })
-  })
-  it('should 400 bad request for invalid id',()=>{
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toEqual([]);
+      });
+  });
+  it("should 400 bad request for invalid id", () => {
     return request(app)
-    .get('/api/articles/banana/comments')
-    .expect(400)
-    .then(({body:{msg}})=>{
-      expect(msg).toEqual("invalid data type")
-    })
-  })
+      .get("/api/articles/banana/comments")
+      .expect(400)
+      .then(({ body: { error } }) => {
+        expect(error).toEqual("invalid data type");
+      });
+  });
 });
 
-describe('POST /api/articles/:article_id/comments',()=>{
-  it('should 202: accept a comment for a given article responding with the posted comment',()=>{
+describe("POST /api/articles/:article_id/comments", () => {
+  it("should 201: accept a comment for a given article responding with the posted comment", () => {
     return request(app)
-    .post("/api/articles/1/comments")
-    .send({username:'lurker',body:"Don't mind me, I'm just lurking..."})
-    .expect("Content-type",/json/)
-    .expect(202)
-    .then(({body:{comment}})=>{
-      expect(comment).toEqual(expect.objectContaining( {
-        comment_id: 19,
-        body: "Don't mind me, I'm just lurking...",
-        article_id: 1,
-        author: 'lurker',
-        votes: 0,
-        created_at: expect.any(String)
-      }))
-    })
-    .then(()=>{
-      return request(app)
-      .get('/api/articles/1/comments')
-      .expect(200)
-      .then(({body:{comments}})=>{
-        expect(comments[0]).toEqual(expect.objectContaining({
-          comment_id: 19,
-          body: "Don't mind me, I'm just lurking...",
-          article_id: 1,
-          author: 'lurker',
-          votes: 0,
-          created_at: expect.any(String)
-        }))
+      .post("/api/articles/1/comments")
+      .send({ username: "lurker", body: "Don't mind me, I'm just lurking..." })
+      .expect("Content-type", /json/)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: 19,
+            body: "Don't mind me, I'm just lurking...",
+            article_id: 1,
+            author: "lurker",
+            votes: 0,
+            created_at: expect.any(String),
+          })
+        );
       })
-    })
-  })
-  it('should 404 for a non existent user',()=>{
+      .then(() => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments[0]).toEqual(
+              expect.objectContaining({
+                comment_id: 19,
+                body: "Don't mind me, I'm just lurking...",
+                article_id: 1,
+                author: "lurker",
+                votes: 0,
+                created_at: expect.any(String),
+              })
+            );
+          });
+      });
+  });
+  it("should 404 for a non existent user", () => {
     return request(app)
-    .post("/api/articles/1/comments")
-    .send({username:'mickeyMouse',body:"Don't mind me, I'm just lurking..."})
-    .expect("Content-type",/json/)
-    .expect(404)
-    .then(({body:{msg}})=>{
-      expect(msg).toEqual("not found")
-    })
-  })
-  it('should 404 for a non existent article',()=>{
+      .post("/api/articles/1/comments")
+      .send({
+        username: "mickeyMouse",
+        body: "Don't mind me, I'm just lurking...",
+      })
+      .expect("Content-type", /json/)
+      .expect(404)
+      .then(({ body: { error } }) => {
+        expect(error).toEqual(
+          'Key (author)=(mickeyMouse) is not present in table "users".'
+        );
+      });
+  });
+  it("should 404 for a non existent article", () => {
     return request(app)
-    .post("/api/articles/999/comments")
-    .send({username:'lurker',body:"Don't mind me, I'm just lurking..."})
-    .expect("Content-type",/json/)
-    .expect(404)
-    .then(({body:{msg}})=>{
-      expect(msg).toEqual("not found")
-    })
-  })
-  it('should 400 for a bad datatype',()=>{
+      .post("/api/articles/999/comments")
+      .send({ username: "lurker", body: "Don't mind me, I'm just lurking..." })
+      .expect("Content-type", /json/)
+      .expect(404)
+      .then(({ body: { error } }) => {
+        expect(error).toEqual(
+          'Key (article_id)=(999) is not present in table "articles".'
+        );
+      });
+  });
+  it("should 400 for a bad datatype", () => {
     return request(app)
-    .post("/api/articles/banana/comments")
-    .send({username:'lurker',body:"Don't mind me, I'm just lurking..."})
-    .expect("Content-type",/json/)
-    .expect(400)
-    .then(({body:{msg}})=>{
-      expect(msg).toEqual("invalid data type")
-    })
-  })
-  it('should 400 for no username',()=>{
+      .post("/api/articles/banana/comments")
+      .send({ username: "lurker", body: "Don't mind me, I'm just lurking..." })
+      .expect("Content-type", /json/)
+      .expect(400)
+      .then(({ body: { error } }) => {
+        expect(error).toEqual("invalid data type");
+      });
+  });
+  it("should 400 for no username", () => {
     return request(app)
-    .post("/api/articles/banana/comments")
-    .send({body:"Don't mind me, I'm just lurking..."})
-    .expect("Content-type",/json/)
-    .expect(400)
-    .then(({body:{msg}})=>{
-      expect(msg).toEqual("missing argument")
-    })
-  })
-  it('should 400 for no body',()=>{
+      .post("/api/articles/banana/comments")
+      .send({ body: "Don't mind me, I'm just lurking..." })
+      .expect("Content-type", /json/)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("missing argument");
+      });
+  });
+  it("should 400 for no body", () => {
     return request(app)
-    .post("/api/articles/banana/comments")
-    .send({username:"lurker"})
-    .expect("Content-type",/json/)
-    .expect(400)
-    .then(({body:{msg}})=>{
-      expect(msg).toEqual("missing argument")
-    })
-  })
-  it('should 400 for bad datatype in body',()=>{
+      .post("/api/articles/banana/comments")
+      .send({ username: "lurker" })
+      .expect("Content-type", /json/)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("missing argument");
+      });
+  });
+  it("should 400 for bad datatype in body", () => {
     return request(app)
-    .post("/api/articles/banana/comments")
-    .send({username:"lurker",body:{body:"object"}})
-    .expect("Content-type",/json/)
-    .expect(400)
-    .then(({body:{msg}})=>{
-      expect(msg).toEqual("invalid data type")
-    })
-  })
-  it('should 400 for bad datatype in body 2',()=>{
+      .post("/api/articles/banana/comments")
+      .send({ username: "lurker", body: { body: "object" } })
+      .expect("Content-type", /json/)
+      .expect(400)
+      .then(({ body: { error } }) => {
+        expect(error).toEqual("invalid data type");
+      });
+  });
+  it("should 400 for bad datatype in body 2", () => {
     return request(app)
-    .post("/api/articles/banana/comments")
-    .send({username:{obj:"lurker"},body:"object"})
-    .expect("Content-type",/json/)
-    .expect(400)
-    .then(({body:{msg}})=>{
-      expect(msg).toEqual("invalid data type")
-    })
-  })
- })
+      .post("/api/articles/banana/comments")
+      .send({ username: { obj: "lurker" }, body: "object" })
+      .expect("Content-type", /json/)
+      .expect(400)
+      .then(({ body: { error } }) => {
+        expect(error).toEqual("invalid data type");
+      });
+  });
+  it("should still work for extra properties as long as the required are included", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "lurker",
+        body: "some stuff",
+        anotherKey: "some random stuff",
+      })
+      .expect("Content-type", /json/)
+      .expect(201);
+  });
+});

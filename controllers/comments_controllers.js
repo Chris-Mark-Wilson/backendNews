@@ -1,6 +1,6 @@
 const { selectComments, insertComment } = require("../models/comments_models");
 const { selectArticleById } = require("../models/articles_models");
-const selectUserByUsername = require("../models/users_models");
+
 const getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   return Promise.all([
@@ -22,13 +22,9 @@ const postComment = (req, res, next) => {
   if (!body || !username) {
     res.status(400).send({ msg: "missing argument" });
   } else
-    return Promise.all([
-      selectArticleById(article_id),
-      selectUserByUsername(username),
-      insertComment(article_id, username, body),
-    ])
-      .then(([a, b, comment]) => {
-        res.status(202).send({ comment: comment });
+    return insertComment(article_id, username, body)
+      .then((comment) => {
+        res.status(201).send({ comment: comment });
       })
       .catch((err) => {
         next(err);

@@ -1,14 +1,14 @@
 const express = require("express");
-const getAllTopics = require("./db/controllers/topics_controllers");
+const getAllTopics = require("./controllers/topics_controllers");
 const {
   getArticleById,
   getAllArticles,
-} = require("./db/controllers/articles_controllers");
+} = require("./controllers/articles_controllers");
 const { customErrors, serverErrors } = require("./db/errors");
-const getAllEndpoints = require("./db/controllers/endpoints_controller");
+const getAllEndpoints = require("./controllers/endpoints_controller");
 const {
   getCommentsByArticleId,postComment
-} = require("./db/controllers/comments_controllers");
+} = require("./controllers/comments_controllers");
 
 const app = express();
 app.use(express.json())
