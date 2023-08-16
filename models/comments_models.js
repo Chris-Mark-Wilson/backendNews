@@ -27,4 +27,15 @@ const insertComment = (article_id, username, body) => {
     return rows[0];
   });
 };
-module.exports = { selectComments, insertComment };
+const deleteComment=(comment_id)=>{
+  return db.query(`
+  DELETE from comments
+  WHERE comment_id= $1
+  RETURNING *;
+  `[comment_id])
+  .then(({rows})=>{
+    console.log(rows)
+    return rows[0]
+  })
+}
+module.exports = { selectComments, insertComment,deleteComment };

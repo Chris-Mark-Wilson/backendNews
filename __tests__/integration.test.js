@@ -313,3 +313,21 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(201);
   });
 });
+
+
+describe.skip('DELETE /api/comments/:comment_id',()=>{
+  it('should respond 404 no content and delete the given comment',()=>{
+    return request(app)
+    .delete('/api/comments/1')
+    .expect(204)
+    .then(()=>{
+      return request(app)
+      .get('/api/articles/9/comments')
+      .expect(200)
+      .then(({body:{comments}})=>{
+       expect(comments.length).toBe(1)
+       expect(comments[0].body).toEqual( "The owls are not what they seem.")
+      })
+    })
+  })
+})
