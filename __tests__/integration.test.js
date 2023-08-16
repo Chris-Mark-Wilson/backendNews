@@ -204,6 +204,21 @@ describe('POST /api/articles/:article_id/comments',()=>{
         created_at: expect.any(String)
       }))
     })
+    .then(()=>{
+      return request(app)
+      .get('/api/articles/1/comments')
+      .expect(200)
+      .then(({body:{comments}})=>{
+        expect(comments[0]).toEqual(expect.objectContaining({
+          comment_id: 19,
+          body: "Don't mind me, I'm just lurking...",
+          article_id: 1,
+          author: 'lurker',
+          votes: 0,
+          created_at: expect.any(String)
+        }))
+      })
+    })
   })
   it('should 404 for a non existent user',()=>{
     return request(app)
@@ -275,4 +290,4 @@ describe('POST /api/articles/:article_id/comments',()=>{
       expect(msg).toEqual("invalid data type")
     })
   })
-})
+ })
