@@ -458,3 +458,18 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe(' GET /api/articles/:article_id',()=>{
+  it('should now include comment_count in the result',()=>{
+    return request(app)
+    .get('/api/articles/1')
+    .expect('Content-Type',/json/)
+    .expect(200)
+    .then(({body:{article}})=>{
+      expect(article).toEqual(expect.objectContaining({
+        comment_count:11
+      }))
+    })
+
+  })
+})
