@@ -401,3 +401,38 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  it("should respond 204 no content and delete the given comment", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then((body) => {
+        return request(app)
+          .get("/api/articles/9/comments")
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments.length).toBe(1);
+            expect(comments[0].body).toEqual(
+              "The owls are not what they seem."
+            );
+          });
+      });
+  });
+  it("should respond 404 for non existent comment", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+  it("should respond 400 for bad datatype", () => {
+    return request(app)
+      .delete("/api/comments/comment")
+      .expect(400)
+      .then(({ body: { error } }) => {
+        expect(error).toBe("invalid data type");
+      });
+  });
+});
