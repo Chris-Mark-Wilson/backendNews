@@ -81,5 +81,12 @@
         }
       ]
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes a specific comment by its id",
+    "queries": [],
+    "exampleResponse": {
+   "status":"204 (no content)"
+    }
   }
 }

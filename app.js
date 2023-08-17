@@ -4,7 +4,7 @@ const {
   getArticleById,
   getAllArticles,
 } = require("./controllers/articles_controllers");
-const { customErrors, serverErrors } = require("./db/errors");
+const { customErrors, sqlErrors,serverErrors } = require("./db/errors");
 const getAllEndpoints = require("./controllers/endpoints_controller");
 const {
   getCommentsByArticleId,postComment,removeComment
@@ -32,6 +32,7 @@ app.use((_, res) => {
 });
 
 app.use(customErrors);
+app.use(sqlErrors)
 app.use(serverErrors);
 
 module.exports = app;

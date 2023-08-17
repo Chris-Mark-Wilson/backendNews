@@ -38,6 +38,9 @@ const removeComment=((req,res,next)=>{
   .then(()=>{
     res.status(204).send()
   })
+  .catch((err)=>{
+  next(err)
+  })
 })
 
 module.exports = { getCommentsByArticleId, postComment,removeComment };
