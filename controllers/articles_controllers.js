@@ -3,6 +3,9 @@ const {
   selectAllArticles,
   updateArticle
 } = require("../models/articles_models");
+
+const {selectTopicByTopicName}=require('../models/topics_models')
+
 const getArticleById = (req, res, next) => {
   const { article_id } = req.params;
   selectArticleById(article_id)
@@ -14,9 +17,11 @@ const getArticleById = (req, res, next) => {
     });
 };
 const getAllArticles = (req, res, next) => {
-  selectAllArticles()
-    .then((result) => {
-      res.status(200).send({ articles: result });
+  const {topic,sort_by,order}=req.query;
+
+  return Promise.all([selectTopicByTopicName(topic),selectAllArticles(topic,sort_by,order)])
+     .then(([_,articles]) => {
+      res.status(200).send({ articles:articles });
     })
     .catch((err) => {
       next(err);

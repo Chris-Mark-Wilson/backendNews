@@ -110,7 +110,7 @@ describe("GET /api/articles", () => {
               created_at: expect.any(String),
               votes: expect.any(Number),
               article_img_url: expect.any(String),
-              comment_count: expect.any(String),
+              comment_count: expect.any(Number),
             })
           );
           expect(article).toEqual(
@@ -128,10 +128,10 @@ describe("GET /api/articles", () => {
       .then(({ body: { articles } }) => {
         articles.forEach((article) => {
           if (article.article_id === 1) {
-            expect(article.comment_count).toBe("11");
+            expect(article.comment_count).toBe(11);
           }
           if (article.article_id === 9) {
-            expect(article.comment_count).toBe("2");
+            expect(article.comment_count).toBe(2);
           }
         });
       });
@@ -455,6 +455,164 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body: { error } }) => {
         expect(error).toBe("invalid data type");
+      });
+  });
+});
+
+describe(' GET /api/articles/:article_id',()=>{
+  it('should now include comment_count in the result',()=>{
+    return request(app)
+    .get('/api/articles/1')
+    .expect('Content-Type',/json/)
+    .expect(200)
+    .then(({body:{article}})=>{
+      expect(article).toEqual(expect.objectContaining({
+        comment_count:11
+      }))
+    })
+
+  })
+})
+
+describe("GET /api/articles (queries)", () => {
+  it("should  accept a topic query, serves up aricles by topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(12);
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              topic: "mitch",
+            })
+          );
+        });
+      });
+  });
+  it("should serve up all articles if topic is ommited", () => {
+    return request(app)
+      .get("/api/articles?topic=")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+      });
+  });
+  it("should 404 for non existent topic", () => {
+    return request(app)
+      .get("/api/articles?topic=theflyingpeshwaris")
+      .expect("Content-Type", /json/)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("topic not found");
+      });
+  });
+  
+  it("should sort by author", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+        expect(articles).toBeSortedBy("author", { descending: true });
+      });
+  });
+  it("should sort by title", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+        expect(articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+  it("should sort by article_id", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+        expect(articles).toBeSortedBy("article_id", { descending: true });
+      });
+  });
+  it("should sort by topic", () => {
+    return request(app)
+      .get("/api/articles?sort_by=topic")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+        expect(articles).toBeSortedBy("topic", { descending: true });
+      });
+  });
+  it("should sort by votes", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+        expect(articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+  it("should sort by created_at", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+        expect(articles).toBeSortedBy("created_at", {
+          coerce: true,
+          descending: true,
+        });
+      });
+  });
+  it("should 400  for an invalid sort_by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=dodgy")
+      .expect("Content-Type", /json/)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual(
+          `dodgy is not a valid argument, use ['author','title','article_id','topic','votes','created_at']`
+        );
+      });
+  });
+  it("should order by a given query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at&order=ASC")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+        expect(articles).toBeSortedBy("created_at", {
+          coerce: true,
+          ascending: true,
+        });
+      });
+  });
+  it("should 400 for an invalid order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at&order=dodgy")
+      .expect("Content-Type", /json/)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("DODGY is not a valid order use [ASC, DESC]");
+      });
+  });
+  it("should 200 for a valid sort with no articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper&sort_by=votes")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { articles} }) => {
+        expect(articles.length).toBe(0);
       });
   });
 });
