@@ -3,6 +3,7 @@ const getAllTopics = require("./controllers/topics_controllers");
 const {
   getArticleById,
   getAllArticles,
+  patchArticle,
 } = require("./controllers/articles_controllers");
 const { customErrors, sqlErrors,serverErrors } = require("./db/errors");
 const getAllEndpoints = require("./controllers/endpoints_controller");
@@ -26,6 +27,8 @@ app.get("/api/articles", getAllArticles);
 app.post('/api/articles/:article_id/comments',postComment)
 
 app.delete('/api/comments/:comment_id',removeComment)
+
+app.patch("/api/articles/:article_id", patchArticle);
 
 app.use((_, res) => {
   res.status(404).send({ status: 404, msg: "Path not found" });
