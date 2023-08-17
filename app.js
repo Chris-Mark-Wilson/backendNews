@@ -5,10 +5,10 @@ const {
   getAllArticles,
   patchArticle,
 } = require("./controllers/articles_controllers");
-const { customErrors, serverErrors } = require("./db/errors");
+const { customErrors, sqlErrors,serverErrors } = require("./db/errors");
 const getAllEndpoints = require("./controllers/endpoints_controller");
 const {
-  getCommentsByArticleId,postComment
+  getCommentsByArticleId,postComment,removeComment
 } = require("./controllers/comments_controllers");
 const getUsers=require('./controllers/users_controllers')
 
@@ -29,6 +29,8 @@ app.get("/api/users",getUsers)
 
 app.post('/api/articles/:article_id/comments',postComment)
 
+app.delete('/api/comments/:comment_id',removeComment)
+
 app.patch("/api/articles/:article_id", patchArticle);
 
 app.use((_, res) => {
@@ -36,6 +38,7 @@ app.use((_, res) => {
 });
 
 app.use(customErrors);
+app.use(sqlErrors)
 app.use(serverErrors);
 
 module.exports = app;

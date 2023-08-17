@@ -82,6 +82,13 @@
       ]
     }
   },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes a specific comment by its id",
+    "queries": [],
+    "exampleResponse": {
+   "status":"204 (no content)"
+    }
+  },
   "PATCH /api/articles/:article_id": {
     "description": "updates an article with a given id",
     "queries": [],
