@@ -110,7 +110,7 @@ describe("GET /api/articles", () => {
               created_at: expect.any(String),
               votes: expect.any(Number),
               article_img_url: expect.any(String),
-              comment_count: expect.any(String),
+              comment_count: expect.any(Number),
             })
           );
           expect(article).toEqual(
@@ -128,10 +128,10 @@ describe("GET /api/articles", () => {
       .then(({ body: { articles } }) => {
         articles.forEach((article) => {
           if (article.article_id === 1) {
-            expect(article.comment_count).toBe("11");
+            expect(article.comment_count).toBe(11);
           }
           if (article.article_id === 9) {
-            expect(article.comment_count).toBe("2");
+            expect(article.comment_count).toBe(2);
           }
         });
       });
