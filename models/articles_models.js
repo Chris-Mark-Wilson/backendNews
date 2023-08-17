@@ -18,20 +18,47 @@ const selectArticleById = (id) => {
       return rows[0];
     });
 };
-const selectAllArticles = () => {
-  return db
-    .query(
-      `SELECT
-articles.author,title,articles.article_id,topic,articles.created_at,articles.votes,article_img_url,
-COUNT (comments.comment_id) :: INTEGER AS comment_count
- FROM articles
- LEFT JOIN comments ON articles.article_id=comments.article_id
- GROUP BY articles.author,articles.title,articles.article_id
- ORDER BY created_at DESC;`
-    )
-    .then((result) => {
-      return result.rows;
+const selectAllArticles = (topic, sort_by = "created_at", order = `DESC`) => {
+  let queryValues = [];
+  sort_by = sort_by.toLowerCase();
+  order = order.toUpperCase();
+  const sortList = [
+    "author",
+    "title",
+    "article_id",
+    "topic",
+    "votes",
+    "created_at",
+  ];
+  const orderList = ["ASC", "DESC"];
+  if (!orderList.includes(order))
+    return Promise.reject({
+      status: 400,
+      msg: `${order} is not a valid order use [ASC, DESC]`,
     });
+  if (!sortList.includes(sort_by))
+    return Promise.reject({
+      status: 400,
+    msg: `${sort_by} is not a valid argument, use ['author','title','article_id','topic','votes','created_at']`,
+    });
+
+  let baseQuery = `SELECT
+  articles.author,title,articles.article_id,topic,articles.created_at,articles.votes,article_img_url,
+  COUNT (comments.comment_id) :: INTEGER AS comment_count
+   FROM articles
+   LEFT JOIN comments ON articles.article_id=comments.article_id `;
+
+  if (topic) {
+    baseQuery += `WHERE topic=$1 `;
+    queryValues.push(topic);
+  }
+
+  baseQuery += `GROUP BY articles.author,articles.title,articles.article_id
+   ORDER BY ${sort_by} ${order};`;
+
+  return db.query(baseQuery, queryValues).then(({ rows }) => {
+     return rows;
+  });
 };
 
 const updateArticle = (article_id, body) => {
