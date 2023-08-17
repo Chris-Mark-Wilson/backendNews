@@ -110,7 +110,7 @@ describe("GET /api/articles", () => {
               created_at: expect.any(String),
               votes: expect.any(Number),
               article_img_url: expect.any(String),
-              comment_count: expect.any(String),
+              comment_count: expect.any(Number),
             })
           );
           expect(article).toEqual(
@@ -128,10 +128,10 @@ describe("GET /api/articles", () => {
       .then(({ body: { articles } }) => {
         articles.forEach((article) => {
           if (article.article_id === 1) {
-            expect(article.comment_count).toBe("11");
+            expect(article.comment_count).toBe(11);
           }
           if (article.article_id === 9) {
-            expect(article.comment_count).toBe("2");
+            expect(article.comment_count).toBe(2);
           }
         });
       });
@@ -458,6 +458,21 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe(' GET /api/articles/:article_id',()=>{
+  it('should now include comment_count in the result',()=>{
+    return request(app)
+    .get('/api/articles/1')
+    .expect('Content-Type',/json/)
+    .expect(200)
+    .then(({body:{article}})=>{
+      expect(article).toEqual(expect.objectContaining({
+        comment_count:11
+      }))
+    })
+
+  })
+})
 
 describe("GET /api/articles (queries)", () => {
   it("should  accept a topic query, serves up aricles by topic", () => {
