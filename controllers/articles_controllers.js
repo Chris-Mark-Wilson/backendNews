@@ -14,9 +14,10 @@ const getArticleById = (req, res, next) => {
     });
 };
 const getAllArticles = (req, res, next) => {
-  selectAllArticles()
-    .then((result) => {
-      res.status(200).send({ articles: result });
+  const {topic,sort_by,order}=req.query;
+  selectAllArticles(topic,sort_by,order)
+    .then((articles) => {
+      res.status(200).send({ articles:articles });
     })
     .catch((err) => {
       next(err);
