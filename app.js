@@ -10,6 +10,7 @@ const getAllEndpoints = require("./controllers/endpoints_controller");
 const {
   getCommentsByArticleId,postComment,removeComment
 } = require("./controllers/comments_controllers");
+const getUsers=require('./controllers/users_controllers')
 
 const app = express();
 app.use(express.json())
@@ -23,6 +24,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles", getAllArticles);
+
+app.get("/api/users",getUsers)
 
 app.post('/api/articles/:article_id/comments',postComment)
 
