@@ -459,20 +459,21 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-describe(' GET /api/articles/:article_id',()=>{
-  it('should now include comment_count in the result',()=>{
+describe(" GET /api/articles/:article_id", () => {
+  it("should now include comment_count in the result", () => {
     return request(app)
-    .get('/api/articles/1')
-    .expect('Content-Type',/json/)
-    .expect(200)
-    .then(({body:{article}})=>{
-      expect(article).toEqual(expect.objectContaining({
-        comment_count:11
-      }))
-    })
-
-  })
-})
+      .get("/api/articles/1")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            comment_count: 11,
+          })
+        );
+      });
+  });
+});
 
 describe("GET /api/articles (queries)", () => {
   it("should  accept a topic query, serves up aricles by topic", () => {
@@ -509,7 +510,7 @@ describe("GET /api/articles (queries)", () => {
         expect(msg).toBe("topic not found");
       });
   });
-  
+
   it("should sort by author", () => {
     return request(app)
       .get("/api/articles?sort_by=author")
@@ -611,8 +612,36 @@ describe("GET /api/articles (queries)", () => {
       .get("/api/articles?topic=paper&sort_by=votes")
       .expect("Content-Type", /json/)
       .expect(200)
-      .then(({ body: { articles} }) => {
+      .then(({ body: { articles } }) => {
         expect(articles.length).toBe(0);
+      });
+  });
+});
+
+describe.only("GET /api/users/:username", () => {
+  it("should serve up a user by the given username", () => {
+    return request(app)
+      .get("/api/users/lurker")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toEqual(
+          expect.objectContaining({
+            username: "lurker",
+            name: "do_nothing",
+            avatar_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          })
+        );
+      });
+  });
+  it("should 404 for a non existent user", () => {
+    return request(app)
+      .get("/api/users/dodyusername")
+      .expect("Content-Type", /json/)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
       });
   });
 });
