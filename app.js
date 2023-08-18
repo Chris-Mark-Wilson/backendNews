@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { customErrors, sqlErrors, serverErrors } = require("./db/errors");
+const { customErrors, sqlErrors, serverErrors } = require("./errors");
 
 const apiRouter = require("./routes/apiRouter");
 const articleRouter = require("./routes/articlesRouter");

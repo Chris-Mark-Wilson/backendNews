@@ -376,8 +376,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body: { error } }) => {
         expect(error).toEqual(
-          "Failing row contains (1, Living in the shadow of a great man, mitch, butter_bridge, I find this existence challenging, 2020-07-09 21:11:00, null, https://images.pexels.com/photos/158651/news-newsletter-newspape...)."
-        );
+         "invalid data type votes"       );
       });
   });
   it("should 400 for a bad datatype on article_id", () => {
@@ -579,8 +578,8 @@ describe("GET /api/articles (queries)", () => {
       .get("/api/articles?sort_by=dodgy")
       .expect("Content-Type", /json/)
       .expect(400)
-      .then(({ body: { msg } }) => {
-        expect(msg).toEqual(
+      .then(({ body: {error } }) => {
+        expect(error).toEqual(
           `dodgy is not a valid argument, use ['author','title','article_id','topic','votes','created_at']`
         );
       });
@@ -603,8 +602,8 @@ describe("GET /api/articles (queries)", () => {
       .get("/api/articles?sort_by=created_at&order=dodgy")
       .expect("Content-Type", /json/)
       .expect(400)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe("DODGY is not a valid order use [ASC, DESC]");
+      .then(({ body: { error } }) => {
+        expect(error).toBe("DODGY is not a valid order use [ASC, DESC]");
       });
   });
   it("should 200 for a valid sort with no articles", () => {
@@ -656,13 +655,13 @@ describe("PATCH /api/comments/:comment_id", () => {
       .then(({ body: { comment } }) => {
         expect(comment).toEqual(
           expect.objectContaining({
-            comment_id:1,
-              body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-              votes: 17,
-              author: "butter_bridge",
-              article_id: 9,
-              created_at: expect.any(String)
-              })
+            comment_id: 1,
+            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            votes: 17,
+            author: "butter_bridge",
+            article_id: 9,
+            created_at: expect.any(String),
+          })
         );
       });
   });
@@ -693,33 +692,35 @@ describe("PATCH /api/comments/:comment_id", () => {
       .then(({ body: { comment } }) => {
         expect(comment).toEqual(
           expect.objectContaining({
-            comment_id:1,
+            comment_id: 1,
             body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
             votes: -1,
             author: "butter_bridge",
             article_id: 9,
-            created_at: expect.any(String)   
-           }));
+            created_at: expect.any(String),
+          })
+        );
       });
-    });
-    it("should 400 for a bad  key on sent object", () => {
-      return request(app)
-        .patch("/api/comments/1")
-        .send({ inc_vote: -17 })
-        .expect("Content-Type", /json/)
-        .expect(400)
-        .then(({ body: { error } }) => {
-          expect(error).toBe("Failing row contains (1, Oh, I've got compassion running out of my nose, pal! I'm the Sul..., 9, butter_bridge, null, 2020-04-06 13:17:00).");
-        });
-    });
-    it("should 400 for a bad data type on sent object value", () => {
-      return request(app)
-        .patch("/api/comments/1")
-        .expect("Content-Type", /json/)
-        .expect(400)
-        .then(({ body: { error } }) => {
-          expect(error).toBe("Failing row contains (1, Oh, I've got compassion running out of my nose, pal! I'm the Sul..., 9, butter_bridge, null, 2020-04-06 13:17:00).");
-        });
-    });
-
+  });
+  it("should 400 for a bad  key on sent object", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_vote: -17 })
+      .expect("Content-Type", /json/)
+      .expect(400)
+      .then(({ body: { error } }) => {
+        expect(error).toBe(
+          "invalid data type votes"   );
+      });
+  });
+  it("should 400 for a bad data type on sent object value", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .expect("Content-Type", /json/)
+      .expect(400)
+      .then(({ body: { error } }) => {
+        expect(error).toBe(
+          "invalid data type votes" );
+      });
+  });
 });
