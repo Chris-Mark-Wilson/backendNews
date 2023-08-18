@@ -645,3 +645,81 @@ describe("GET /api/users/:username", () => {
       });
   });
 });
+
+describe("PATCH /api/comments/:comment_id", () => {
+  it("should accept a votes body and update the votes for the given comment", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 1 })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id:1,
+              body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+              votes: 17,
+              author: "butter_bridge",
+              article_id: 9,
+              created_at: expect.any(String)
+              })
+        );
+      });
+  });
+  it("should 404 for a non existent comment", () => {
+    return request(app)
+      .patch("/api/comments/999")
+      .expect("Content-Type", /json/)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("comment not found");
+      });
+  });
+  it("should 400 for a bad data type as comment id", () => {
+    return request(app)
+      .patch("/api/comments/dodgydataype")
+      .expect("Content-Type", /json/)
+      .expect(400)
+      .then(({ body: { error } }) => {
+        expect(error).toBe("invalid data type");
+      });
+  });
+  it("should decrement the votes and go into minus numbers if need be", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: -17 })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id:1,
+            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            votes: -1,
+            author: "butter_bridge",
+            article_id: 9,
+            created_at: expect.any(String)   
+           }));
+      });
+    });
+    it("should 400 for a bad  key on sent object", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .send({ inc_vote: -17 })
+        .expect("Content-Type", /json/)
+        .expect(400)
+        .then(({ body: { error } }) => {
+          expect(error).toBe("Failing row contains (1, Oh, I've got compassion running out of my nose, pal! I'm the Sul..., 9, butter_bridge, null, 2020-04-06 13:17:00).");
+        });
+    });
+    it("should 400 for a bad data type on sent object value", () => {
+      return request(app)
+        .patch("/api/comments/1")
+        .expect("Content-Type", /json/)
+        .expect(400)
+        .then(({ body: { error } }) => {
+          expect(error).toBe("Failing row contains (1, Oh, I've got compassion running out of my nose, pal! I'm the Sul..., 9, butter_bridge, null, 2020-04-06 13:17:00).");
+        });
+    });
+
+});
