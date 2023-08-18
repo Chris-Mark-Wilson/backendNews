@@ -30,7 +30,7 @@ each file should contain the name of the database:
 `PGDATABASE=nc_news` (for .env.development)
 
 If you require to use the app on a live hosted database (such as elephant sql) then you will also need  
-` .env.production`  
+`.env.production`  
 containing  
 `DATABASE_URL=//"your database url"// eg: postgres://igw...@surus.db.elephantsql.com`  
 
@@ -38,6 +38,8 @@ containing
 In order to utilise the database api you will need to seed the database.  
 run  
 `npm run seed`  
+In order to use the production version run  
+`npm seed-prod`
 
 ## Try it out!
 To use the local version (runs on localhost port 9090)
