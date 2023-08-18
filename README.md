@@ -29,7 +29,7 @@ each file should contain the name of the database:
 `PGDATABASE=nc_news_test` (in .env.test)  
 `PGDATABASE=nc_news` (for .env.development)
 
-If you require to use the app on a live hosted database (such as elephant sql) then you will also need 
+If you require to use the app on a live hosted database (such as elephant sql) then you will also need  
 ` .env.production`  
 containing  
 `DATABASE_URL=//"your database url"// eg: postgres://igw...@surus.db.elephantsql.com`  
