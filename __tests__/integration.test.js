@@ -618,7 +618,7 @@ describe("GET /api/articles (queries)", () => {
   });
 });
 
-describe.only("GET /api/users/:username", () => {
+describe("GET /api/users/:username", () => {
   it("should serve up a user by the given username", () => {
     return request(app)
       .get("/api/users/lurker")
