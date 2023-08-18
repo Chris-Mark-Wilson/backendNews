@@ -40,4 +40,26 @@ const deleteComment = (comment_id) => {
 if(!rows.length) return Promise.reject({status:404,msg:"not found"})
   });
 };
-module.exports = { selectComments, insertComment, deleteComment };
+
+const updateCommentVotes=(comment_id,inc_votes)=>{
+  
+ return db.query(`
+ UPDATE comments
+ SET votes=comments.votes+$2
+ WHERE comment_id=$1
+ RETURNING *;`,[comment_id,inc_votes])
+ .then(({rows})=>{
+  return rows[0]
+ })
+}
+
+const selectCommentByCommentId=(comment_id)=>{
+return db.query(`
+SELECT * FROM comments
+WHERE comment_id=$1`,[comment_id])
+.then(({rows})=>{
+  if(rows.length===0) return Promise.reject({status:404,msg:"comment not found"})
+  else return rows[0]
+})
+}
+module.exports = { selectComments, insertComment, deleteComment , updateCommentVotes,selectCommentByCommentId};

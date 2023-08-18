@@ -1,4 +1,4 @@
-const { selectComments, insertComment,deleteComment } = require("../models/comments_models");
+const { selectComments, insertComment,deleteComment, updateCommentVotes,selectCommentByCommentId } = require("../models/comments_models");
 const { selectArticleById } = require("../models/articles_models");
 
 const getCommentsByArticleId = (req, res, next) => {
@@ -31,6 +31,7 @@ const postComment = (req, res, next) => {
       });
 };
 
+
 const removeComment=((req,res,next)=>{
 
   const {comment_id}=req.params;
@@ -43,4 +44,16 @@ const removeComment=((req,res,next)=>{
   })
 })
 
-module.exports = { getCommentsByArticleId, postComment,removeComment };
+const patchCommentVotes=(req,res,next)=>{
+  const {inc_votes}=req.body;
+  const {comment_id}=req.params;
+  return Promise.all([selectCommentByCommentId(comment_id), updateCommentVotes(comment_id,inc_votes)])
+   .then(([_,comment])=>{
+    res.status(200).send({comment:comment})
+  })
+  .catch((err)=>{
+    next(err)
+  })
+}
+
+module.exports = { getCommentsByArticleId, postComment,removeComment,patchCommentVotes };
