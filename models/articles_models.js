@@ -122,9 +122,14 @@ RETURNING *;
 `,
     [[author, title, body, topic, article_img_url]]
   );
-  return db.query(queryString).then(({ rows }) => {
-    return rows[0];
-  });
+  return db.query(queryString)
+  .then(({ rows }) => {
+    const {article_id}=rows[0]
+   return selectArticleById(article_id)
+  .then((result)=>{
+return result
+  })
+})
 };
 module.exports = {
   selectArticleById,

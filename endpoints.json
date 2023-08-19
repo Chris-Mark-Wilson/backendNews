@@ -172,7 +172,8 @@
       "created_at": "2020-07-09T20:11:00.000Z",
       "votes": 0,
       "topic": "mitch",
-      "article_img_url": "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE="
+      "article_img_url": "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
+      "comment_count": 0
     }
   }
 }
