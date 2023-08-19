@@ -492,7 +492,7 @@ describe("GET /api/articles (queries)", () => {
   });
   it("should serve up all articles if topic is ommited", () => {
     return request(app)
-      .get("/api/articles?topic=")
+      .get("/api/articles")
       .expect("Content-Type", /json/)
       .expect(200)
       .then(({ body: { articles } }) => {
@@ -722,8 +722,7 @@ describe("PATCH /api/comments/:comment_id", () => {
   });
 });
 
-
-describe("POST /api/artilcles", () => {
+describe("POST /api/articles", () => {
   it("should accept a new article for the given topic", () => {
     return request(app)
       .post("/api/articles")
@@ -744,38 +743,39 @@ describe("POST /api/artilcles", () => {
             author: "lurker",
             title: "New article",
             body: "the body of the test article",
-            created_at:expect.any(String),
-            votes:0,
+            created_at: expect.any(String),
+            votes: 0,
             topic: "mitch",
             article_img_url:
               "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
           })
         );
       })
-      .then(()=>{
+      .then(() => {
         return request(app)
-        .get('/api/articles/14')
-        .expect(200)
-        .then(({body:{article}})=>{
-          expect(article).toEqual(expect.objectContaining({
-            article_id: 14,
-            author: "lurker",
-            title: "New article",
-            body: "the body of the test article",
-            created_at:expect.any(String),
-            votes:0,
-            topic: "mitch",
-            article_img_url:
-              "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
-      
-          }))
-        })
-      })
-    })
+          .get("/api/articles/14")
+          .expect(200)
+          .then(({ body: { article } }) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                article_id: 14,
+                author: "lurker",
+                title: "New article",
+                body: "the body of the test article",
+                created_at: expect.any(String),
+                votes: 0,
+                topic: "mitch",
+                article_img_url:
+                  "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
+              })
+            );
+          });
+      });
+  });
 
-    it('should 404 for a non existent user',()=>{
-      return request(app)
-      .post('/api/articles')
+  it("should 404 for a non existent user", () => {
+    return request(app)
+      .post("/api/articles")
       .send({
         author: "dodgyUser",
         title: "New article",
@@ -785,9 +785,207 @@ describe("POST /api/artilcles", () => {
           "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
       })
       .expect(404)
-      .then(({body:{msg}})=>{
-        expect(msg).toEqual("user not found")
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("user not found");
+      });
+  });
+  it("should 404 for a non existent topic", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "lurker",
+        title: "New article",
+        body: "the body of the test article",
+        topic: "dodgyTopic",
+        article_img_url:
+          "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
       })
-    })
-});
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("topic not found");
+      });
+  });
+  it("should default to stock image url if not supplied", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "lurker",
+        title: "New article",
+        body: "the body of the test article",
+        topic: "mitch",
+      })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            article_id: 14,
+            author: "lurker",
+            title: "New article",
+            body: "the body of the test article",
+            created_at: expect.any(String),
+            votes: 0,
+            topic: "mitch",
+            article_img_url:
+              "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
+          })
+        );
+      });
+  });
+  it("should still 200 if extra properties exist on the sent object", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "lurker",
+        title: "New article",
+        body: "the body of the test article",
+        topic: "mitch",
+        randomKey: "blurb",
+      })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual(
+          expect.not.objectContaining({
+            randomKey: "blurb",
+          })
+        );
+      });
+  });
+  describe("POST /api/articles 400's", () => {
+    it("should 400 for bad datatype on author", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: { obj: "dodgy" },
+          title: "New article",
+          body: "the body of the test article",
+          topic: "mitch",
+        })
+        .expect(400)
+        .then(({ body: { error } }) => {
+          expect(error).toEqual("invalid data type username [object]");
+        });
+    });
 
+    it("should 400 for bad datatype on title", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "lurker",
+          title: { title: "New article" },
+          body: "the body of the test article",
+          topic: "mitch",
+        })
+        .expect(400)
+        .then(({ body: { error } }) => {
+          expect(error).toEqual("invalid data type title [object]");
+        });
+    });
+    it("should 400 for bad datatype on body", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "lurker",
+          title: "New article",
+          body: { body: "the body of the test article" },
+          topic: "mitch",
+        })
+        .expect(400)
+        .then(({ body: { error } }) => {
+          expect(error).toEqual("invalid data type body [object]");
+        });
+    });
+    it("should 400 for bad datatype on topic", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "lurker",
+          title: "New article",
+          body: "the body of the test article",
+          topic: { topic: "mitch" },
+        })
+        .expect(400)
+        .then(({ body: { error } }) => {
+          expect(error).toEqual("invalid data type topic [object]");
+        });
+    });
+    it("should 400 for bad datatype on article_img_url", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "lurker",
+          title: "New article",
+          body: "the body of the test article",
+          topic: "mitch",
+          article_img_url: { image: "someurl" },
+        })
+        .expect(400)
+        .then(({ body: { error } }) => {
+          expect(error).toEqual("invalid data type article_img_url [object]");
+        });
+    });
+    it("should 400 for missing author", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          title: "New article",
+          body: "the body of the test article",
+          topic: "mitch",
+          article_img_url: { image: "someurl" },
+        })
+        .expect(400)
+        .then(({ body: { error } }) => {
+          expect(error).toEqual(
+            `missing property, must include author, title, body, topic`
+          );
+        });
+    });
+    it("should 400 for missing title", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "lurker",
+          body: "the body of the test article",
+          topic: "mitch",
+          article_img_url: { image: "someurl" },
+        })
+        .expect(400)
+        .then(({ body: { error } }) => {
+          expect(error).toEqual(
+            `missing property, must include author, title, body, topic`
+          );
+        });
+    });
+    it("should 400 for missing body", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "lurker",
+          title: "some title",
+          topic: "mitch",
+          article_img_url: { image: "someurl" },
+        })
+        .expect(400)
+        .then(({ body: { error } }) => {
+          expect(error).toEqual(
+            `missing property, must include author, title, body, topic`
+          );
+        });
+    });
+    it("should 400 for missing topic", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "lurker",
+          title: "some title",
+          body: "body",
+          article_img_url: { image: "someurl" },
+        })
+        .expect(400)
+        .then(({ body: { error } }) => {
+          expect(error).toEqual(
+            `missing property, must include author, title, body, topic`
+          );
+        });
+    });
+  });
+});

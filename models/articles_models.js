@@ -1,6 +1,6 @@
 const db = require("../db/connection");
 const format = require("pg-format");
-const defaultArticleImage = require("../images/articleImages");
+const { defaultArticleImage } = require("../images/articleImages");
 const selectArticleById = (id) => {
   return db
     .query(
@@ -79,9 +79,39 @@ const updateArticle = (article_id, body) => {
     });
 };
 
-const insertArticle = (article) => {
-  const { author, title, body, topic, article_img_url } = article;
-  if (!article_img_url) article_img_url = defaultArticleImage;
+const insertArticle = ({
+  author,
+  title,
+  body,
+  topic,
+  article_img_url = defaultArticleImage,
+}) => {
+  const data = [author, title, body, topic, article_img_url];
+
+  if (data.some((item) => item === undefined))
+    return Promise.reject({
+      status: 400,
+      error: `missing property, must include author, title, body, topic`,
+    });
+  const lookup = {
+    0: "author",
+    1: "title",
+    2: "body",
+    3: "topic",
+    4: "article_img_url",
+  };
+  const badDataIndex = data.findIndex(
+    (property) => typeof property != "string"
+  );
+
+  if (badDataIndex != -1)
+    return Promise.reject({
+      status: 400,
+      error: `invalid data type ${lookup[badDataIndex]} [${typeof data.filter(
+        (property) => typeof (property != "string")
+      )}]`,
+    });
+
   const queryString = format(
     `
 INSERT INTO articles 
