@@ -747,7 +747,8 @@ describe("POST /api/articles", () => {
             votes: 0,
             topic: "mitch",
             article_img_url:
-              "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE="
+              "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
+              comment_count:0
           })
         );
       })
@@ -767,6 +768,7 @@ describe("POST /api/articles", () => {
                 topic: "mitch",
                 article_img_url:
                   "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
+                  comment_count:0
               })
             );
           });
