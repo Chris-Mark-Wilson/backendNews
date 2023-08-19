@@ -93,7 +93,6 @@ RETURNING *;
     [[author, title, body, topic, article_img_url]]
   );
   return db.query(queryString).then(({ rows }) => {
-    console.log(rows);
     return rows[0];
   });
 };

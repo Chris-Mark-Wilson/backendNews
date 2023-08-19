@@ -639,7 +639,7 @@ describe("GET /api/users/:username", () => {
       .expect("Content-Type", /json/)
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("not found");
+        expect(msg).toBe("user not found");
       });
   });
 });
@@ -721,6 +721,8 @@ describe("PATCH /api/comments/:comment_id", () => {
       });
   });
 });
+
+
 describe("POST /api/artilcles", () => {
   it("should accept a new article for the given topic", () => {
     return request(app)
@@ -768,6 +770,23 @@ describe("POST /api/artilcles", () => {
       
           }))
         })
+      })
+    })
+
+    it('should 404 for a non existent user',()=>{
+      return request(app)
+      .post('/api/articles')
+      .send({
+        author: "dodgyUser",
+        title: "New article",
+        body: "the body of the test article",
+        topic: "mitch",
+        article_img_url:
+          "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
+      })
+      .expect(404)
+      .then(({body:{msg}})=>{
+        expect(msg).toEqual("user not found")
       })
     })
 });
