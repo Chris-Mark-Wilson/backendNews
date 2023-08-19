@@ -749,24 +749,26 @@ describe("POST /api/artilcles", () => {
               "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
           })
         );
-      });
-  });
+      })
+      .then(()=>{
+        return request(app)
+        .get('/api/articles/14')
+        .expect(200)
+        .then(({body:{article}})=>{
+          expect(article).toEqual(expect.objectContaining({
+            article_id: 14,
+            author: "lurker",
+            title: "New article",
+            body: "the body of the test article",
+            created_at:expect.any(String),
+            votes:0,
+            topic: "mitch",
+            article_img_url:
+              "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
+      
+          }))
+        })
+      })
+    })
 });
 
-// be available on /api/articles.
-// add a new article.
-// Request body accepts:
-
-// an object with the following properties:
-// author
-// title
-// body
-// topic
-// article_img_url - will default if not provided
-// Responds with:
-
-// the newly added article, with all the above properties, as well as:
-// article_id
-// votes
-// created_at
-// comment_count
