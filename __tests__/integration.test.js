@@ -375,8 +375,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect("Content-Type", /json/)
       .expect(400)
       .then(({ body: { error } }) => {
-        expect(error).toEqual(
-         "invalid data type votes"       );
+        expect(error).toEqual("invalid data type votes");
       });
   });
   it("should 400 for a bad datatype on article_id", () => {
@@ -578,7 +577,7 @@ describe("GET /api/articles (queries)", () => {
       .get("/api/articles?sort_by=dodgy")
       .expect("Content-Type", /json/)
       .expect(400)
-      .then(({ body: {error } }) => {
+      .then(({ body: { error } }) => {
         expect(error).toEqual(
           `dodgy is not a valid argument, use ['author','title','article_id','topic','votes','created_at']`
         );
@@ -709,8 +708,7 @@ describe("PATCH /api/comments/:comment_id", () => {
       .expect("Content-Type", /json/)
       .expect(400)
       .then(({ body: { error } }) => {
-        expect(error).toBe(
-          "invalid data type votes"   );
+        expect(error).toBe("invalid data type votes");
       });
   });
   it("should 400 for a bad data type on sent object value", () => {
@@ -719,8 +717,56 @@ describe("PATCH /api/comments/:comment_id", () => {
       .expect("Content-Type", /json/)
       .expect(400)
       .then(({ body: { error } }) => {
-        expect(error).toBe(
-          "invalid data type votes" );
+        expect(error).toBe("invalid data type votes");
       });
   });
 });
+describe("POST /api/artilcles", () => {
+  it("should accept a new article for the given topic", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "lurker",
+        title: "New article",
+        body: "the body of the test article",
+        topic: "mitch",
+        article_img_url:
+          "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
+      })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            article_id: 14,
+            author: "lurker",
+            title: "New article",
+            body: "the body of the test article",
+            created_at:expect.any(String),
+            votes:0,
+            topic: "mitch",
+            article_img_url:
+              "https://media.istockphoto.com/id/508273083/vector/newspaper.jpg?s=612x612&w=0&k=20&c=07dOAo-KtyY92hRMJeIrp5BBDs3gXKGz3Fjf-sJh_JE=",
+          })
+        );
+      });
+  });
+});
+
+// be available on /api/articles.
+// add a new article.
+// Request body accepts:
+
+// an object with the following properties:
+// author
+// title
+// body
+// topic
+// article_img_url - will default if not provided
+// Responds with:
+
+// the newly added article, with all the above properties, as well as:
+// article_id
+// votes
+// created_at
+// comment_count
