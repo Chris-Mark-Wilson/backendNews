@@ -43,7 +43,7 @@ describe("/api", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .then(({ body: { endpoints } }) => {
-        expect(endpoints).toEqual(endpointsFile);
+        expect(endpoints  // Your code console.lhere).toEqual(endpointsFile);
       });
   });
 });

@@ -30,6 +30,7 @@ const selectAllArticles = (topic, sort_by = "created_at", order = `DESC`) => {
     "topic",
     "votes",
     "created_at",
+    "comment_count"
   ];
   const orderList = ["ASC", "DESC"];
   if (!orderList.includes(order))
@@ -40,7 +41,7 @@ const selectAllArticles = (topic, sort_by = "created_at", order = `DESC`) => {
   if (!sortList.includes(sort_by))
     return Promise.reject({
       status: 400,
-      error: `${sort_by} is not a valid argument, use ['author','title','article_id','topic','votes','created_at']`,
+      error: `${sort_by} is not a valid argument, use ['author','title','article_id','topic','votes','created_at','comment_count']`,
     });
 
   let baseQuery = `SELECT
