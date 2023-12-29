@@ -4,7 +4,7 @@ const app = require("../app");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
 const endpointsFile = require("../endpoints.json");
-
+console.log(db,"db")
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 
@@ -43,7 +43,7 @@ describe("/api", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .then(({ body: { endpoints } }) => {
-        expect(endpoints  // Your code console.lhere).toEqual(endpointsFile);
+        expect(endpoints).toEqual(endpointsFile);
       });
   });
 });
@@ -579,7 +579,7 @@ describe("GET /api/articles (queries)", () => {
       .expect(400)
       .then(({ body: { error } }) => {
         expect(error).toEqual(
-          `dodgy is not a valid argument, use ['author','title','article_id','topic','votes','created_at']`
+          `dodgy is not a valid argument, use ['author','title','article_id','topic','votes','created_at','comment_count']`
         );
       });
   });
